@@ -22,14 +22,15 @@ type State = {
   items: CartItem[];
 };
 
-type AddToCartAction = {
+// Actions
+type AddToCart = {
   type: 'ADD';
   payload: {
     item: CartItem;
   };
 };
 
-type QuantityAction = {
+type Quantity = {
   type: 'QUANTITY';
   payload: {
     id: string;
@@ -37,12 +38,12 @@ type QuantityAction = {
   };
 };
 
-type ResetAction = {
+type Reset = {
   type: 'RESET';
   payload?: undefined;
 };
 
-type Action = AddToCartAction | QuantityAction | ResetAction;
+type Action = AddToCart | Quantity | Reset;
 
 const cartReducer = (state: State, action: Action) => {
   const { items } = state;
@@ -62,7 +63,7 @@ const cartReducer = (state: State, action: Action) => {
         });
       } else {
         const existingItem = updatedItems[updatedItemIndex];
-        existingItem.quantity! += 1;
+        existingItem.quantity!++;
       }
       return {
         ...state,
@@ -70,14 +71,18 @@ const cartReducer = (state: State, action: Action) => {
       };
     }
     case 'QUANTITY': {
-      const updatedItems = [...items];
+      const updatedItems = structuredClone(items);
       const updatedItemIndex = updatedItems.findIndex(
         (item) => item.id === payload.id
       );
       if (payload.type === 'MORE') {
         updatedItems[updatedItemIndex].quantity!++;
       } else {
-        updatedItems[updatedItemIndex].quantity!--;
+        if (updatedItems[updatedItemIndex].quantity === 1) {
+          updatedItems.splice(updatedItemIndex, 1);
+        } else {
+          updatedItems[updatedItemIndex].quantity!--;
+        }
       }
       return {
         ...state,
@@ -86,7 +91,6 @@ const cartReducer = (state: State, action: Action) => {
     }
     case 'RESET': {
       return {
-        amount: 0,
         items: [],
       };
     }
@@ -129,7 +133,7 @@ const CartContextProvider: React.FC<Props> = ({ children }) => {
     });
   };
 
-  const ctxCart = {
+  const ctxCart: Cart = {
     items: cart.items,
     addToCart: addToCartHandler,
     changeQuantity: changeQuantityHandler,

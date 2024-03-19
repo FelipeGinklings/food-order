@@ -1,3 +1,6 @@
+// Modals
+export type Progress = undefined | 'cart' | 'checkout' | 'success';
+
 // Handle data types for the app
 export interface MealData {
   id: string;

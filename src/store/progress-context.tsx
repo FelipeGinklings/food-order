@@ -1,6 +1,5 @@
 import { createContext, useReducer } from 'react';
-
-type Progress = undefined | 'cart' | 'complete';
+import { Progress } from '../utils/types';
 
 type InitialValues = {
   progress: Progress;

@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import Button from '../UI/Button';
 import { CartItem, MealData } from '../../utils/types';
+import { formatted } from '../../utils/formatter';
 
 interface Props {
   mealData: MealData;
@@ -19,7 +20,7 @@ const Meal: React.FC<Props> = memo(({ mealData, handleAddToCart }) => {
         <div>
           <h3 className="text-2xl font-bold my-4 mx-0">{mealData.name}</h3>
           <p className="inline-block bg-stone-700 text-yellow-500 text-sm font-bold py-2 px-8 m-0 rounded-[4px]">
-            {mealData.price}
+            {formatted(mealData.price)}
           </p>
           <p className="m-4">{mealData.description}</p>
         </div>
