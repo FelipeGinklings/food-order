@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Button from '../UI/Button';
 import { CartItem, MealData } from '../../utils/types';
 
@@ -7,7 +7,7 @@ interface Props {
   handleAddToCart: (item: CartItem) => void;
 }
 
-const Meal: React.FC<Props> = ({ mealData, handleAddToCart }) => {
+const Meal: React.FC<Props> = memo(({ mealData, handleAddToCart }) => {
   return (
     <li className="bg-very-dark-brow rounded-2xl overflow-hidden text-center shadow-md">
       <article className="h-full flex flex-col justify-between">
@@ -40,6 +40,6 @@ const Meal: React.FC<Props> = ({ mealData, handleAddToCart }) => {
       </article>
     </li>
   );
-};
+});
 
 export default Meal;

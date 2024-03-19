@@ -8,16 +8,18 @@ import ProgressProvider from './store/progress-context';
 const App = () => {
   return (
     // Providers
-    <CartContextProvider>
-      {/* Main Page */}
-      <Header />
-      <Meals />
+    <ProgressProvider>
+      <CartContextProvider>
+        {/* Main Page */}
+        <Header />
+        <Meals />
 
-      {/* Modals */}
-      {/* <Modal >
+        {/* Modals */}
+        {/* <Modal >
           <Cart />
         </Modal> */}
-    </CartContextProvider>
+      </CartContextProvider>
+    </ProgressProvider>
   );
 };
 
