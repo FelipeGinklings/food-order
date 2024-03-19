@@ -1,3 +1,4 @@
+// Handle data types for the app
 export interface MealData {
   id: string;
   price: string;
@@ -14,12 +15,15 @@ export interface CustomerData {
   city: string;
 }
 
-interface Meals extends MealData {
+export interface CartItem extends MealData {
+  id: string;
+  price: string;
+  name: string;
   quantity: number;
 }
 
 export interface OrderData {
   id?: string;
-  items: Meals[];
+  items: CartItem[];
   customer: CustomerData;
 }
