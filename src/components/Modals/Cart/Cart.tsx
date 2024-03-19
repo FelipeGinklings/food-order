@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Button from '../../UI/Button';
 import Item from './Item';
+import { ProgressContext } from 'src/store/progress-context';
 
 const Cart: React.FC = () => {
+  const { setProgress } = useContext(ProgressContext);
   return (
     <>
       <h2 className="py-4 px-0 text-2xl font-extrabold">Your Cart</h2>
@@ -17,7 +19,7 @@ const Cart: React.FC = () => {
         <Button
           className="text-stone-800 active:text-stone-700 hover:text-stone-700"
           textOnly
-          type="button"
+          onClick={setProgress.bind(this, undefined)}
         >
           Close
         </Button>

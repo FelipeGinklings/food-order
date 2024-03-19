@@ -1,13 +1,14 @@
-import React from 'react';
-import Modal from '../UI/Modal';
+import React, { useContext } from 'react';
 import Button from '../UI/Button';
 import Input from '../UI/Input';
+import { ProgressContext } from '../../store/progress-context';
 
 // type Props = {}
 
 const Checkout: React.FC = () => {
+  const { setProgress } = useContext(ProgressContext);
   return (
-    <Modal>
+    <>
       <form>
         <h2 className="py-4 px-0 text-2xl font-extrabold">Checkout</h2>
         <p className="text-base">Total Amount: </p>
@@ -23,13 +24,13 @@ const Checkout: React.FC = () => {
         <Button
           className="text-stone-800 active:text-stone-700 hover:text-stone-700"
           textOnly
-          type="button"
+          onClick={setProgress.bind(this, 'success')}
         >
           Close
         </Button>
         <Button>Submit Order</Button>
       </p>
-    </Modal>
+    </>
   );
 };
 

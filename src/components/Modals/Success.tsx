@@ -1,12 +1,13 @@
-import React from 'react';
-import Modal from '../UI/Modal';
+import React, { useContext } from 'react';
 import Button from '../UI/Button';
-
-// type Props = {}
+import { ProgressContext } from '../../store/progress-context';
+import { CartContext } from '../../store/cart-context';
 
 const Success: React.FC = () => {
+  const { reset } = useContext(CartContext);
+  const { setProgress } = useContext(ProgressContext);
   return (
-    <Modal>
+    <>
       <h2 className="py-4 px-0 text-2xl font-extrabold">Success!</h2>
       <p>Your order was submitted successfully.</p>
       <p>
@@ -14,9 +15,17 @@ const Success: React.FC = () => {
         minutes.
       </p>
       <p className="flex justify-end gap-4 mt-4">
-        <Button type="button">Okay</Button>
+        <Button
+          type="button"
+          onClick={() => {
+            setProgress(undefined);
+            reset();
+          }}
+        >
+          Okay
+        </Button>
       </p>
-    </Modal>
+    </>
   );
 };
 
