@@ -15,18 +15,22 @@ app.use((req, res, next) => {
   next();
 });
 
+// Get all available meals
 app.get('/meals', async (req, res) => {
   const meals = await fs.readFile('./data/available-meals.json', 'utf8');
   res.json(JSON.parse(meals));
 });
 
+// Make a new order
 app.post('/orders', async (req, res) => {
   const orderData = req.body.order;
 
-  if (orderData === null || orderData.items === null || orderData.items === []) {
-    return res
-      .status(400)
-      .json({ message: 'Missing data.' });
+  if (
+    orderData === null ||
+    orderData.items === null ||
+    orderData.items.length === 0
+  ) {
+    return res.status(400).json({ message: 'Missing data.' });
   }
 
   if (
