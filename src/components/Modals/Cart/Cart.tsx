@@ -1,13 +1,10 @@
 import React from 'react';
-import Modal from '../../UI/Modal';
 import Button from '../../UI/Button';
 import Item from './Item';
 
-// type Props = {}
-
 const Cart: React.FC = () => {
   return (
-    <Modal>
+    <>
       <h2 className="py-4 px-0 text-2xl font-extrabold">Your Cart</h2>
       <ul className="list-none my-2 mx-0 p-0">
         <Item />
@@ -26,7 +23,7 @@ const Cart: React.FC = () => {
         </Button>
         <Button type="button">Go to Checkout</Button>
       </p>
-    </Modal>
+    </>
   );
 };
 

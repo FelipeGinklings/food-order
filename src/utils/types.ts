@@ -3,8 +3,8 @@ export interface MealData {
   id: string;
   price: string;
   name: string;
-  description?: string;
-  image?: string;
+  description: string;
+  image: string;
 }
 
 export interface CustomerData {
@@ -15,11 +15,11 @@ export interface CustomerData {
   city: string;
 }
 
-export interface CartItem extends MealData {
+export interface CartItem {
   id: string;
-  price: string;
   name: string;
-  quantity: number;
+  price: string;
+  quantity?: number;
 }
 
 export interface OrderData {

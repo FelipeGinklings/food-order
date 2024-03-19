@@ -1,21 +1,24 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useCallback, useReducer } from 'react';
 import React from 'react';
 import { CartItem } from 'src/utils/types';
 
 // Context
 type Cart = {
-  amount: number;
   items: CartItem[];
+  addToCart: (item: CartItem) => void;
+  changeQuantity: (id: string, type: 'MORE' | 'LESS') => void;
+  reset: () => void;
 };
 
 export const CartContext = createContext<Cart>({
-  amount: 0,
   items: [],
+  addToCart: () => {},
+  changeQuantity: () => {},
+  reset: () => {},
 });
 
 // Reducer
 type State = {
-  amount: number;
   items: CartItem[];
 };
 
@@ -34,22 +37,35 @@ type QuantityAction = {
   };
 };
 
-type Action = AddToCartAction | QuantityAction;
+type ResetAction = {
+  type: 'RESET';
+  payload?: undefined;
+};
+
+type Action = AddToCartAction | QuantityAction | ResetAction;
 
 const cartReducer = (state: State, action: Action) => {
-  const { amount, items } = state;
+  const { items } = state;
   const { type, payload } = action;
 
   switch (type) {
     case 'ADD': {
-      const updatedItems = [...items];
-      const updatedItemIndex = updatedItems.findIndex(
+      const updatedItemIndex = items.findIndex(
         (item) => item.id === payload.item.id
       );
-      updatedItems[updatedItemIndex].quantity++;
+      const updatedItems = structuredClone(items);
+
+      if (updatedItemIndex === -1) {
+        updatedItems.push({
+          ...payload.item,
+          quantity: 1,
+        });
+      } else {
+        const existingItem = updatedItems[updatedItemIndex];
+        existingItem.quantity! += 1;
+      }
       return {
         ...state,
-        amount: amount + 1,
         items: updatedItems,
       };
     }
@@ -59,17 +75,21 @@ const cartReducer = (state: State, action: Action) => {
         (item) => item.id === payload.id
       );
       if (payload.type === 'MORE') {
-        updatedItems[updatedItemIndex].quantity++;
+        updatedItems[updatedItemIndex].quantity!++;
       } else {
-        updatedItems[updatedItemIndex].quantity--;
+        updatedItems[updatedItemIndex].quantity!--;
       }
       return {
         ...state,
         items: updatedItems,
       };
     }
-    default:
-      return state;
+    case 'RESET': {
+      return {
+        amount: 0,
+        items: [],
+      };
+    }
   }
 };
 
@@ -80,32 +100,40 @@ type Props = {
 
 const CartContextProvider: React.FC<Props> = ({ children }) => {
   const [cart, dispatch] = useReducer(cartReducer, {
-    amount: 0,
     items: [],
   });
 
-  const addToCartHandler = (item: CartItem) => {
-    dispatch({
-      type: 'ADD',
-      payload: { item },
-    });
-  };
+  const addToCartHandler = useCallback(
+    (item: CartItem) => {
+      dispatch({
+        type: 'ADD',
+        payload: { item },
+      });
+    },
+    [dispatch]
+  );
 
-  const quantityHandler = (id: string, type: 'MORE' | 'LESS') => {
+  const changeQuantityHandler = (id: string, type: 'MORE' | 'LESS') => {
     dispatch({
       type: 'QUANTITY',
       payload: {
-        id: id,
-        type: type,
+        id,
+        type,
       },
     });
   };
 
+  const resetCartHandler = () => {
+    dispatch({
+      type: 'RESET',
+    });
+  };
+
   const ctxCart = {
-    amount: cart.amount,
     items: cart.items,
     addToCart: addToCartHandler,
-    quantity: quantityHandler,
+    changeQuantity: changeQuantityHandler,
+    reset: resetCartHandler,
   };
 
   return (

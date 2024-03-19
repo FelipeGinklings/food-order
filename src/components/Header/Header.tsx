@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import logo from '../../assets/logo.jpg';
 import Button from '../UI/Button';
+import { CartContext } from '../../store/cart-context';
 
 // type Props = {}
 
 const Header: React.FC = () => {
+  const cartCtx = useContext(CartContext);
   return (
     <header className="flex justify-between items-center py-12 px-[10%]">
       <div className="flex gap-4 items-center">
@@ -23,7 +25,7 @@ const Header: React.FC = () => {
           textOnly
           type="button"
         >
-          Cart (0)
+          Cart ({cartCtx.items.length})
         </Button>
       </nav>
     </header>
