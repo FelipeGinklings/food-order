@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '../UI/Button';
-import { MealData } from 'src/App';
+import { MealData } from '../../utils/types';
 
 interface Props extends MealData {}
 
