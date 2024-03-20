@@ -1,13 +1,18 @@
 import React, { useCallback, useContext } from 'react';
 import Meal from './Meal';
 import useHttp from '../../hooks/useHttp';
-import { fetchMealData } from '../../utils/http';
 import { CartItem } from '../../utils/types';
 import { CartContext } from '../../store/cart-context';
 import Error from '../Error/Error';
 
+const requestConfig = {};
+
 const Meals: React.FC = () => {
-  const { mealData, isLoading, error } = useHttp(fetchMealData, []);
+  const {
+    data: mealData,
+    isLoading,
+    error,
+  } = useHttp('GET', 'http://localhost:3000/meals', requestConfig, []);
   const { addToCart } = useContext(CartContext);
 
   const addToCartHandler = useCallback(
