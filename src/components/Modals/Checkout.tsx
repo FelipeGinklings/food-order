@@ -4,8 +4,10 @@ import Input from '../UI/Input';
 import { ProgressContext } from '../../store/progress-context';
 import { CartContext } from '../../store/cart-context';
 import { formatted } from '../../utils/formatter';
-import { postNewOrder } from '../../utils/http';
 import { CustomerData } from '../../utils/types';
+import useHttp from '../../hooks/useHttp';
+import Error from '../Error/Error';
+import useValidation from '../../hooks/useValidation';
 
 // Constants
 const EMAIL = 'email';
@@ -14,9 +16,22 @@ const ADDRESS = 'address';
 const POSTAL = 'postal';
 const CITY = 'city';
 
+const requestConfig = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
+
 const Checkout: React.FC = () => {
   const { setProgress } = useContext(ProgressContext);
-  const { items } = useContext(CartContext);
+  const { items, reset } = useContext(CartContext);
+  const {
+    sendRequest,
+    isLoading: isSending,
+    error,
+  } = useHttp('POST', 'http://localhost:3000/orders', requestConfig);
+  const { inputsInvalids, validation, clean } = useValidation();
 
   const total = items
     .reduce((acc, item) => acc + +item.price * item.quantity!, 0)
@@ -31,12 +46,15 @@ const Checkout: React.FC = () => {
     const data = Object.fromEntries(fd.entries());
 
     // Validation
-    // Must not contain any numbers
-    if (
-      /\d/.test(String(data[NAME])) || // Validate the Full Name
-      /\d/.test(String(data[CITY])) // Validate the City
-    ) {
-      console.log('Invalid Input');
+    const nameIsInvalid = validation(String(data[NAME]), NAME, 'onlyLetters');
+    const cityIsInvalid = validation(String(data[CITY]), CITY, 'onlyLetters');
+    const postalIsInvalid = validation(
+      String(data[POSTAL]),
+      POSTAL,
+      'onlyNumbers'
+    );
+
+    if (nameIsInvalid || cityIsInvalid || postalIsInvalid) {
       return;
     }
 
@@ -48,8 +66,17 @@ const Checkout: React.FC = () => {
       city: String(data[CITY]),
     };
 
-    postNewOrder({ items, customer });
+    console.log(customer);
+    sendRequest(JSON.stringify({ order: { items, customer } }));
     setProgress('success');
+    reset();
+  };
+
+  const cleanInput = (name: string) => {
+    if (inputsInvalids[name]) {
+      console.log('cleaning');
+      clean(name);
+    }
   };
 
   return (
@@ -59,9 +86,11 @@ const Checkout: React.FC = () => {
       <Input
         label="Full Name"
         htmlFor={NAME}
+        error={inputsInvalids[NAME] && inputsInvalids[NAME].message}
         type="text"
         name={NAME}
         id={NAME}
+        onChange={cleanInput.bind(this, NAME)}
         required
       />
       <Input
@@ -84,9 +113,11 @@ const Checkout: React.FC = () => {
         <Input
           label="Postal Code"
           htmlFor={POSTAL}
+          error={inputsInvalids[POSTAL] && inputsInvalids[POSTAL].message}
           type={POSTAL}
           name={POSTAL}
           id={POSTAL}
+          onChange={cleanInput.bind(this, POSTAL)}
           inputMode="numeric"
           maxLength={5}
           minLength={5}
@@ -95,23 +126,31 @@ const Checkout: React.FC = () => {
         <Input
           label="City"
           htmlFor={CITY}
+          error={inputsInvalids[CITY] && inputsInvalids[CITY].message}
           type={CITY}
           name={CITY}
           id={CITY}
+          onChange={cleanInput.bind(this, CITY)}
           required
         />
       </div>
-      <p className="flex justify-end gap-4 mt-4">
-        <Button
-          className="text-stone-800 active:text-stone-700 hover:text-stone-700"
-          textOnly
-          type="button"
-          onClick={setProgress.bind(this, undefined)}
-        >
-          Close
-        </Button>
-        <Button>Submit Order</Button>
-      </p>
+      {error && (
+        <Error title="Failed to submit order" message={error.message} />
+      )}
+      {isSending && <span>Sending order data...</span>}
+      {!error && !isSending && (
+        <p className="flex justify-end gap-4 mt-4">
+          <Button
+            className="text-stone-800 active:text-stone-700 hover:text-stone-700"
+            textOnly
+            type="button"
+            onClick={setProgress.bind(this, undefined)}
+          >
+            Close
+          </Button>
+          <Button>Submit Order</Button>
+        </p>
+      )}
     </form>
   );
 };
