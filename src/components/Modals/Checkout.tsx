@@ -8,6 +8,7 @@ import { CustomerData } from '../../utils/types';
 import useHttp from '../../hooks/useHttp';
 import Error from '../Error/Error';
 import useValidation from '../../hooks/useValidation';
+import { delay } from '../../utils/delay';
 
 // Constants
 const EMAIL = 'email';
@@ -65,16 +66,16 @@ const Checkout: React.FC = () => {
       postalCode: String(data[POSTAL]),
       city: String(data[CITY]),
     };
-
-    console.log(customer);
     sendRequest(JSON.stringify({ order: { items, customer } }));
-    setProgress('success');
+
+    if (!error && !isSending) {
+      delay().then(() => setProgress('success'));
+    }
     reset();
   };
 
   const cleanInput = (name: string) => {
     if (inputsInvalids[name]) {
-      console.log('cleaning');
       clean(name);
     }
   };
@@ -134,23 +135,25 @@ const Checkout: React.FC = () => {
           required
         />
       </div>
-      {error && (
-        <Error title="Failed to submit order" message={error.message} />
-      )}
-      {isSending && <span>Sending order data...</span>}
-      {!error && !isSending && (
-        <p className="flex justify-end gap-4 mt-4">
-          <Button
-            className="text-stone-800 active:text-stone-700 hover:text-stone-700"
-            textOnly
-            type="button"
-            onClick={setProgress.bind(this, undefined)}
-          >
-            Close
-          </Button>
-          <Button>Submit Order</Button>
-        </p>
-      )}
+      <p className="flex justify-end gap-4 mt-4">
+        {error && (
+          <Error title="Failed to submit order" message={error.message} />
+        )}
+        {isSending && <span>Sending order data...</span>}
+        {!error && !isSending && (
+          <>
+            <Button
+              className="text-stone-800 active:text-stone-700 hover:text-stone-700"
+              textOnly
+              type="button"
+              onClick={setProgress.bind(this, undefined)}
+            >
+              Close
+            </Button>
+            <Button>Submit Order</Button>
+          </>
+        )}
+      </p>
     </form>
   );
 };

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { MealData } from '../utils/types';
+import { delay } from '../utils/delay';
 
 const sendHTTPRequest = async (url: string, config?: object) => {
   // Fetch data from the server
@@ -26,6 +27,7 @@ const useHttp = (
   const sendRequest = useCallback(
     async (order?: string) => {
       setIsLoading(true);
+      if (type === 'POST') await delay();
       try {
         const resData = await sendHTTPRequest(url, {
           ...config,
@@ -39,7 +41,7 @@ const useHttp = (
       }
       setIsLoading(false);
     },
-    [url, config]
+    [url, type, config]
   );
 
   useEffect(() => {

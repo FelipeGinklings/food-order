@@ -22,7 +22,6 @@ const useValidation = () => {
   ) => {
     // Must not contain any numbers
     if (type === 'onlyLetters' && onlyLetters(str)) {
-      console.log('only letters');
       setInputsInvalids((prev) => ({
         ...prev,
         [name]: { message: 'Only letters are accepted!' },
@@ -32,7 +31,6 @@ const useValidation = () => {
       clean(name);
     }
     if (type === 'onlyNumbers' && !onlyNumbers(str)) {
-      console.log('only numbers');
       setInputsInvalids((prev) => ({
         ...prev,
         [name]: { message: 'Only numbers are accepted!' },
