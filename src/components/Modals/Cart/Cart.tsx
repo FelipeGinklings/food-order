@@ -12,7 +12,6 @@ const Cart: React.FC = () => {
   const total = items
     .reduce((acc, item) => acc + +item.price * item.quantity!, 0)
     .toString();
-
   return (
     <>
       <h2 className="py-4 px-0 text-2xl font-extrabold">Your Cart</h2>
@@ -32,7 +31,12 @@ const Cart: React.FC = () => {
         >
           Close
         </Button>
-        <Button type="button">Go to Checkout</Button>
+        <Button
+          onClick={setProgress.bind(this, 'checkout')}
+          disabled={items.length === 0}
+        >
+          Go to Checkout
+        </Button>
       </p>
     </>
   );
