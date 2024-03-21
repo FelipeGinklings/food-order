@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 type InvalidInputs = Record<string, { message: string }>;
 
@@ -15,31 +15,30 @@ const useValidation = () => {
     });
   };
 
-  const validation = (
-    str: string,
-    name: string,
-    type: 'onlyLetters' | 'onlyNumbers'
-  ) => {
-    // Must not contain any numbers
-    if (type === 'onlyLetters' && onlyLetters(str)) {
-      setInputsInvalids((prev) => ({
-        ...prev,
-        [name]: { message: 'Only letters are accepted!' },
-      }));
-      return true;
-    } else {
-      clean(name);
-    }
-    if (type === 'onlyNumbers' && !onlyNumbers(str)) {
-      setInputsInvalids((prev) => ({
-        ...prev,
-        [name]: { message: 'Only numbers are accepted!' },
-      }));
-      return true;
-    } else {
-      clean(name);
-    }
-  };
+  const validation = useCallback(
+    (str: string, name: string, type: 'onlyLetters' | 'onlyNumbers') => {
+      // Must not contain any numbers
+      if (type === 'onlyLetters' && onlyLetters(str)) {
+        setInputsInvalids((prev) => ({
+          ...prev,
+          [name]: { message: 'Only letters are accepted!' },
+        }));
+        return true;
+      } else {
+        clean(name);
+      }
+      if (type === 'onlyNumbers' && !onlyNumbers(str)) {
+        setInputsInvalids((prev) => ({
+          ...prev,
+          [name]: { message: 'Only numbers are accepted!' },
+        }));
+        return true;
+      } else {
+        clean(name);
+      }
+    },
+    []
+  );
 
   return { inputsInvalids, validation, clean };
 };

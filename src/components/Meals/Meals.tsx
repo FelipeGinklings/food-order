@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 import Meal from './Meal';
 import useHttp from '../../hooks/useHttp';
 import { CartItem } from '../../utils/types';
@@ -7,7 +7,7 @@ import Error from '../Error/Error';
 
 const requestConfig = {};
 
-const Meals: React.FC = memo(() => {
+const Meals: React.FC = () => {
   const {
     data: mealData,
     isLoading,
@@ -39,6 +39,6 @@ const Meals: React.FC = memo(() => {
         ))}
     </ul>
   );
-});
+};
 
 export default Meals;
