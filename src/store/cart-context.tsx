@@ -2,6 +2,22 @@ import { createContext, useCallback, useReducer } from 'react';
 import React from 'react';
 import { CartItem } from 'src/utils/types';
 
+// type Teste = ReturnType<typeof >;
+// type Teste = {
+//   a: string;
+//   b: number;
+//   c: string;
+// };
+
+// type Testes = Partial<Teste>;
+
+// const teste: Testes  = {
+//   a: 'a',
+//   c: 'a'
+// };
+
+// console.log(teste);
+
 // Context
 type Cart = {
   items: CartItem[];
@@ -22,43 +38,33 @@ type State = {
   items: CartItem[];
 };
 
+type ActionsTypes = 'ADD' | 'QUANTITY' | 'RESET';
+
 // Actions
-type AddToCart = {
-  type: 'ADD';
-  payload: {
-    item: CartItem;
-  };
+type Actions<Types extends ActionsTypes> = {
+  type: Types;
+  payload?: Types extends 'ADD'
+    ? { item: CartItem }
+    : Types extends 'QUANTITY'
+    ? { id: string; type: 'MORE' | 'LESS' }
+    : never;
 };
 
-type Quantity = {
-  type: 'QUANTITY';
-  payload: {
-    id: string;
-    type: 'MORE' | 'LESS';
-  };
-};
-
-type Reset = {
-  type: 'RESET';
-  payload?: undefined;
-};
-
-type Action = AddToCart | Quantity | Reset;
-
-const cartReducer = (state: State, action: Action) => {
+const cartReducer = (state: State, action: Actions<ActionsTypes>) => {
   const { items } = state;
-  const { type, payload } = action;
+  const { type } = action;
 
   switch (type) {
     case 'ADD': {
+      const { payload } = action as Actions<'ADD'>;
       const updatedItemIndex = items.findIndex(
-        (item) => item.id === payload.item.id
+        (item) => item.id === payload!.item.id
       );
       const updatedItems = structuredClone(items);
 
       if (updatedItemIndex === -1) {
         updatedItems.push({
-          ...payload.item,
+          ...payload!.item,
           quantity: 1,
         });
       } else {
@@ -71,11 +77,12 @@ const cartReducer = (state: State, action: Action) => {
       };
     }
     case 'QUANTITY': {
+      const { payload } = action as Actions<'QUANTITY'>;
       const updatedItems = structuredClone(items);
       const updatedItemIndex = updatedItems.findIndex(
-        (item) => item.id === payload.id
+        (item) => item.id === payload!.id
       );
-      if (payload.type === 'MORE') {
+      if (payload!.type === 'MORE') {
         updatedItems[updatedItemIndex].quantity!++;
       } else {
         if (updatedItems[updatedItemIndex].quantity === 1) {
