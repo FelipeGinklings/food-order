@@ -1,12 +1,16 @@
-import React, { useContext } from 'react';
+import React, { memo, useCallback, useContext } from 'react';
 import logo from '../../assets/logo.jpg';
 import Button from '../UI/Button';
 import { CartContext } from '../../store/cart-context';
 import { ProgressContext } from '../../store/progress-context';
 
-const Header: React.FC = () => {
+const Header: React.FC = memo(() => {
   const { items } = useContext(CartContext);
   const { setProgress } = useContext(ProgressContext);
+
+  const cartHandler = useCallback(() => {
+    setProgress('cart');
+  }, [setProgress]);
 
   return (
     <header className="flex justify-between items-center py-12 px-[10%]">
@@ -24,13 +28,13 @@ const Header: React.FC = () => {
         <Button
           className="text-2xl font-lato text-yellow-400"
           textOnly
-          onClick={setProgress.bind(this, 'cart')}
+          onClick={cartHandler}
         >
           Cart ({items.length})
         </Button>
       </nav>
     </header>
   );
-};
+});
 
 export default Header;

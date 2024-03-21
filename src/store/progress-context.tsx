@@ -1,4 +1,4 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useCallback, useReducer } from 'react';
 import { Progress } from '../utils/types';
 
 type InitialValues = {
@@ -48,9 +48,12 @@ const ProgressProvider: React.FC<Props> = ({ children }) => {
     progress: undefined,
   });
 
-  const setProgressHandler = (progress: Progress) => {
-    dispatch({ type: 'SET', payload: progress });
-  };
+  const setProgressHandler = useCallback(
+    (progress: Progress) => {
+      dispatch({ type: 'SET', payload: progress });
+    },
+    [dispatch]
+  );
 
   const ctxProgress = {
     progress: progress.progress,

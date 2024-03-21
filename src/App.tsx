@@ -15,7 +15,7 @@ const App = () => {
     <CartContextProvider>
       {/* Main Page */}
       <Header />
-      <Meals />
+      <Meals key={'meals'} />
       {/* Modals */}
       <Modal open={!!progress} onClose={setProgress.bind(this, undefined)}>
         {progress === 'cart' && <Cart />}
