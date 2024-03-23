@@ -6,7 +6,6 @@ import { useContext } from 'react';
 import { ProgressContext } from './store/progress-context';
 import Cart from './components/Modals/Cart/Cart';
 import Checkout from './components/Modals/Checkout';
-import Success from './components/Modals/Success';
 
 const App = () => {
   const { progress, setProgress } = useContext(ProgressContext);
@@ -20,7 +19,6 @@ const App = () => {
       <Modal open={!!progress} onClose={setProgress.bind(this, undefined)}>
         {progress === 'cart' && <Cart />}
         {progress === 'checkout' && <Checkout />}
-        {progress === 'success' && <Success />}
       </Modal>
     </CartContextProvider>
   );

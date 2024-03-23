@@ -4,20 +4,20 @@ import Input from '../UI/Input';
 import { ProgressContext } from '../../store/progress-context';
 import { CartContext } from '../../store/cart-context';
 import { formatted } from '../../utils/formatter';
-import { CustomerData } from '../../utils/types';
+import { Config, CustomerData } from '../../utils/types';
 import useHttp from '../../hooks/useHttp';
 import Error from '../Error/Error';
 import useValidation from '../../hooks/useValidation';
-import { delay } from '../../utils/delay';
+import Success from './Success';
 
 // Constants
-const EMAIL = 'email';
 const NAME = 'name';
+const EMAIL = 'email';
 const ADDRESS = 'address';
 const POSTAL = 'postal';
 const CITY = 'city';
 
-const requestConfig = {
+const requestConfig: Config<'POST'> = {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -28,6 +28,7 @@ const Checkout: React.FC = () => {
   const { setProgress } = useContext(ProgressContext);
   const { items, reset } = useContext(CartContext);
   const {
+    data: confirmation,
     sendRequest,
     isLoading: isSending,
     error,
@@ -47,30 +48,22 @@ const Checkout: React.FC = () => {
     const data = Object.fromEntries(fd.entries());
 
     // Validation
-    const nameIsInvalid = validation(String(data[NAME]), NAME, 'onlyLetters');
-    const cityIsInvalid = validation(String(data[CITY]), CITY, 'onlyLetters');
-    const postalIsInvalid = validation(
-      String(data[POSTAL]),
-      POSTAL,
-      'onlyNumbers'
-    );
+    const nameIsInvalid = validation(data[NAME], NAME, 'onlyLetters');
+    const cityIsInvalid = validation(data[CITY], CITY, 'onlyLetters');
+    const postalIsInvalid = validation(data[POSTAL], POSTAL, 'onlyNumbers');
 
     if (nameIsInvalid || cityIsInvalid || postalIsInvalid) {
       return;
     }
 
     const customer: CustomerData = {
-      name: String(data[NAME]),
-      email: String(data[EMAIL]),
-      street: String(data[ADDRESS]),
-      postalCode: String(data[POSTAL]),
-      city: String(data[CITY]),
+      name: data[NAME],
+      email: data[EMAIL],
+      street: data[ADDRESS],
+      postalCode: data[POSTAL],
+      city: data[CITY],
     };
     sendRequest(JSON.stringify({ order: { items, customer } }));
-
-    if (!error && !isSending) {
-      delay().then(() => setProgress('success'));
-    }
     reset();
   };
 
@@ -80,7 +73,9 @@ const Checkout: React.FC = () => {
     }
   };
 
-  return (
+  let content: JSX.Element;
+
+  content = (
     <form onSubmit={handleSubmit}>
       <h2 className="py-4 px-0 text-2xl font-extrabold">Checkout</h2>
       <p className="text-base">Total Amount: {formatted(total)} </p>
@@ -156,6 +151,12 @@ const Checkout: React.FC = () => {
       </p>
     </form>
   );
+
+  if (confirmation && !error) {
+    content = <Success />;
+  }
+
+  return content;
 };
 
 export default Checkout;

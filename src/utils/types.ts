@@ -1,5 +1,5 @@
 // Modals
-export type Progress = undefined | 'cart' | 'checkout' | 'success';
+export type Progress = undefined | 'cart' | 'checkout';
 
 // Handle data types for the app
 export interface MealData {
@@ -11,11 +11,11 @@ export interface MealData {
 }
 
 export interface CustomerData {
-  name: string;
-  email: string;
-  street: string;
-  postalCode: string;
-  city: string;
+  name: FormDataEntryValue | string;
+  email: FormDataEntryValue | string;
+  street: FormDataEntryValue | string;
+  postalCode: FormDataEntryValue | string;
+  city: FormDataEntryValue | string;
 }
 
 export interface CartItem {
@@ -30,3 +30,15 @@ export interface OrderData {
   items: CartItem[];
   customer: CustomerData;
 }
+
+export type Config<T extends 'POST' | 'GET'> = T extends 'GET'
+  ? object
+  : T extends 'POST'
+  ? {
+      method: T;
+      headers: {
+        'Content-Type': T extends 'POST' ? 'application/json' : never;
+      };
+      body?: string;
+    }
+  : never;

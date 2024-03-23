@@ -1,11 +1,11 @@
 import React, { useCallback, useContext } from 'react';
 import Meal from './Meal';
 import useHttp from '../../hooks/useHttp';
-import { CartItem } from '../../utils/types';
+import { CartItem, Config } from '../../utils/types';
 import { CartContext } from '../../store/cart-context';
 import Error from '../Error/Error';
 
-const requestConfig = {};
+const requestConfig: Config<'GET'> = {};
 
 const Meals: React.FC = () => {
   const {

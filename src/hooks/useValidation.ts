@@ -16,9 +16,13 @@ const useValidation = () => {
   };
 
   const validation = useCallback(
-    (str: string, name: string, type: 'onlyLetters' | 'onlyNumbers') => {
+    (
+      str: FormDataEntryValue | string,
+      name: string,
+      type: 'onlyLetters' | 'onlyNumbers'
+    ) => {
       // Must not contain any numbers
-      if (type === 'onlyLetters' && onlyLetters(str)) {
+      if (type === 'onlyLetters' && onlyLetters(str as string)) {
         setInputsInvalids((prev) => ({
           ...prev,
           [name]: { message: 'Only letters are accepted!' },
@@ -27,7 +31,7 @@ const useValidation = () => {
       } else {
         clean(name);
       }
-      if (type === 'onlyNumbers' && !onlyNumbers(str)) {
+      if (type === 'onlyNumbers' && !onlyNumbers(str as string)) {
         setInputsInvalids((prev) => ({
           ...prev,
           [name]: { message: 'Only numbers are accepted!' },
